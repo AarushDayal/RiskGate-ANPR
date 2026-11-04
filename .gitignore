@@ -1,0 +1,8 @@
+datacluster/
+crops/
+results/
+venv/
+__pycache__/
+*.pyc
+splits.json
+eval_easyocr.csv
