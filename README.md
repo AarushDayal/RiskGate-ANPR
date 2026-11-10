@@ -1,6 +1,6 @@
 # RiskGate ANPR
 
-An offline Indian number plate research prototype. It detects a plate in a vehicle photo, reads the crop with a local OCR model, estimates whether the whole reading is correct, and sends uncertain cases for human review. The [study guide](docs/STUDY_GUIDE.md) explains every stage in simple language; [evaluation report](docs/EVALUATION_REPORT.md) records actual results and limitations.
+An offline Indian number plate research prototype. It detects a plate in a vehicle photo, reads the crop with a local OCR model, estimates whether the whole reading is correct, and sends uncertain cases for human review. The [architecture guide](docs/ARCHITECTURE_EXPLAINED.md) explains the complete project in simple language; the [study guide](docs/STUDY_GUIDE.md) has viva questions, and the [evaluation report](docs/EVALUATION_REPORT.md) records actual results and limitations.
 
 ## Current measured result
 
