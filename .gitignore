@@ -6,3 +6,9 @@ __pycache__/
 *.pyc
 splits.json
 eval_easyocr.csv
+data/
+draft_labels.csv
+splits_v2.json
+calibration.json
+weights/
+*.pt

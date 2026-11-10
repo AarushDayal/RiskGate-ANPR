@@ -1,4 +1,5 @@
 import json
+import csv
 import random
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -39,9 +40,44 @@ def load_samples(data_dir: Path = config.DATA_DIR) -> list[PlateSample]:
                     image_path=str(data_dir / "images" / name),
                     bbox=(max(0, x1), max(0, y1), min(W, x2), min(H, y2)),
                     truth=truth,
+                    source="datacluster",
+                    group_id=f"datacluster:{Path(name).stem}",
                 )
             )
     return samples
+
+
+def load_all_samples(data_dir: Path = config.DATA_DIR) -> list[PlateSample]:
+    """Combine source XML labels with reviewed Kaggle crop labels, if present."""
+    samples = load_samples(data_dir)
+    labels = config.ROOT / "data/labels/kaggle_labels.csv"
+    if labels.exists():
+        with labels.open(newline="") as f:
+            for row in csv.DictReader(f):
+                if not row.get("truth") or not row.get("crop_path"):
+                    continue
+                image = config.ROOT / row["crop_path"]
+                if image.exists():
+                    samples.append(PlateSample(str(image), (0, 0, 0, 0), row["truth"],
+                                               "kaggle", f"kaggle:{row['group_id']}"))
+    return samples
+
+
+def make_splits_v2(samples: list[PlateSample], path: Path = config.ROOT / "splits_v2.json") -> dict[str, list[str]]:
+    """Assign each source image as a unit; reserve Datacluster for a source shift check."""
+    groups = sorted({s.group_id or f"{s.source}:{Path(s.image_path).stem}" for s in samples
+                     if s.source == "kaggle"})
+    if not groups:
+        raise ValueError("Reviewed Kaggle labels are required before making splits_v2.json")
+    rng = random.Random(config.SEED)
+    rng.shuffle(groups)
+    n_calib = round(0.4 * len(groups))
+    n_val = round(0.3 * len(groups))
+    splits = {"calib": groups[:n_calib], "val": groups[n_calib:n_calib+n_val],
+              "test": groups[n_calib+n_val:],
+              "cross_dataset_test": sorted({s.group_id for s in samples if s.source == "datacluster"})}
+    path.write_text(json.dumps(splits, indent=2) + "\n")
+    return splits
 
 
 def make_splits(samples: list[PlateSample]) -> dict[str, list[str]]:

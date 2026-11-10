@@ -8,6 +8,24 @@ from riskgate import config
 from riskgate.contracts import EngineResult
 
 
+def order_boxes(boxes: list) -> list:
+    """Return EasyOCR results in reading order, grouping overlapping text rows."""
+    rows = []
+    for box in sorted(boxes, key=lambda item: sum(p[1] for p in item[0]) / 4):
+        ys = [p[1] for p in box[0]]
+        top, bottom = min(ys), max(ys)
+        for row in rows:
+            if min(bottom, row["bottom"]) - max(top, row["top"]) > 0.5 * min(bottom - top, row["bottom"] - row["top"]):
+                row["boxes"].append(box)
+                row["top"] = min(top, row["top"])
+                row["bottom"] = max(bottom, row["bottom"])
+                break
+        else:
+            rows.append({"top": top, "bottom": bottom, "boxes": [box]})
+    return [box for row in sorted(rows, key=lambda r: r["top"])
+            for box in sorted(row["boxes"], key=lambda item: min(p[0] for p in item[0]))]
+
+
 class EasyOCREngine:
     """Wraps easyocr on GPU. Flags are config-level, default off (task 7)."""
 
@@ -29,13 +47,15 @@ class EasyOCREngine:
             res = self.reader.readtext(image, allowlist=self.allowlist)
             latency_ms = (time.perf_counter() - t0) * 1000
             if not res:
-                return EngineResult("", 0.0, latency_ms, error="no text detected")
+                return EngineResult("", 0.0, latency_ms, error="no text detected", boxes_found=0)
             if config.MIN_CROP_H and image.shape[0] < config.MIN_CROP_H:
                 return EngineResult("", 0.0, latency_ms, error="crop too small")
+            res = order_boxes(res)
             return EngineResult(
                 "".join(r[1] for r in res),
                 sum(r[2] for r in res) / len(res),
                 latency_ms,
+                boxes_found=len(res),
             )
         except (cv2.error, RuntimeError, ValueError, OSError) as e:
             return EngineResult("", 0.0, 0.0, error=str(e)[:200])

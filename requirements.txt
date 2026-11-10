@@ -1,0 +1,7 @@
+opencv-python
+easyocr
+torch
+pytest
+scikit-learn
+matplotlib
+streamlit

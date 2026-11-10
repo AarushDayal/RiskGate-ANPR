@@ -10,6 +10,9 @@ RESULTS_DIR = ROOT / "results"
 SEED = 0
 MIN_CROP_H = 0
 SPLIT_FRACTIONS = (0.4, 0.3, 0.3)  # calib / val / test, split by IMAGE not by plate
+READER_ALLOWLIST = True
+READER_UPSCALE = False
+GEMINI_MODEL = "gemini-2.5-flash"
 
 
 def device() -> str:

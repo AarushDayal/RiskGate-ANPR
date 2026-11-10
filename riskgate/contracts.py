@@ -8,6 +8,8 @@ class PlateSample:
     image_path: str
     bbox: tuple[int, int, int, int]
     truth: str
+    source: str = "datacluster"
+    group_id: str = ""
 
 
 @dataclass
@@ -18,3 +20,4 @@ class EngineResult:
     raw_conf: float
     latency_ms: float
     error: str | None = None
+    boxes_found: int = 0
