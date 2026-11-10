@@ -1,4 +1,4 @@
-"""Make a portable demo bundle without dataset images, crops, or API keys."""
+"""Make a portable demo bundle with gallery photos but no bulk dataset or API keys."""
 
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile

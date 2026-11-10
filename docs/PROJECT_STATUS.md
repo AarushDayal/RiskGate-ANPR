@@ -10,8 +10,8 @@
 - EasyOCR and FastPlateOCR compared on the same crops. FastPlateOCR selected on training data and used for the final pipeline.
 - A YOLO11n plate detector fine-tuned on the laptop's RTX 4060. An exploratory second stage added 180 screened full vehicle photos and matched 248/254 test boxes at IoU ≥ 0.5, versus 237/254 before expansion.
 - A logistic correctness estimator fitted on calibration data and accept/review thresholds chosen on validation data. The 10% target accepted 75/254 full images with 11 wrong; 2% and 5% targets accepted none.
-- An offline Streamlit console with full-image and crop modes, 12 manually transcribed local gallery photos, batch review and CSV export, policy selection, decision trace, correction form, evidence charts, and methodology tab.
-- 23 automated tests pass. The demo renders under Streamlit's app test utility.
+- An offline Streamlit console with full-image and crop modes, 12 visually checked real-world vehicle scenes in the gallery, batch review and CSV export, policy selection, decision trace, correction form, evidence charts, and methodology tab.
+- 27 automated tests pass. The demo renders under Streamlit's app test utility.
 - A 180-crop visual audit sample was inspected. It found eight clear issues and three more suspect crops; the XML labels remain unverified as a whole.
 
 ## Current limitation
@@ -22,7 +22,7 @@ The complete image-to-text accuracy is 71/254 (28.0%) on the grouped test. OCR i
 
 - `scripts/prepare_indian.py`: parse XML, create crops, group repeated plates and videos.
 - `scripts/import_extra_detection.py`: screen and add 180 box-only full photos without mixing in protected holdouts.
-- `scripts/prepare_gallery.py`: copy and label 12 portable demo examples.
+- `scripts/prepare_gallery.py`: copy 12 original full vehicle scenes and their visually checked XML labels for the portable demo.
 - `scripts/baseline_v2.py`: local OCR comparison and reader selection.
 - `scripts/eval_router.py`: calibrate, set thresholds, guarded crop test.
 - `scripts/detector.py`: detector preparation, training, and test localization.

@@ -189,7 +189,7 @@ st.markdown("""<div class="hero"><span class="chip">OFFLINE • INDIAN ANPR RESE
 top = st.columns(4, gap="medium")
 with top[0]: card("OCR labels", "1,695", "paired images and text")
 with top[1]: card("Detector train", "1,027", "847 core + 180 screened")
-with top[2]: card("Demo gallery", "12", "manually transcribed photos")
+with top[2]: card("Demo gallery", "12", "real vehicle scenes")
 with top[3]:
     card("Auto coverage", f"{end['coverage']:.1%}" if end else "PENDING", "full-image evaluation")
 
@@ -218,10 +218,18 @@ with demo_tab:
             if examples:
                 label = st.selectbox("Choose an example", list(examples), index=1 if len(examples) > 2 else 0)
                 row = examples[label]
-                path = config.ROOT / (row["image_path"] if mode == "Full vehicle photo" else row.get("crop_path", row["image_path"]))
+                path = config.ROOT / row["image_path"]
                 image_bytes = path.read_bytes()
+                if mode == "Plate crop":
+                    if row.get("crop_path"):
+                        image_bytes = (config.ROOT / row["crop_path"]).read_bytes()
+                    elif all(row.get(key) for key in ("xmin", "ymin", "xmax", "ymax")):
+                        image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+                        x1, y1, x2, y2 = [int(row[key]) for key in ("xmin", "ymin", "xmax", "ymax")]
+                        crop = image[y1:y2, x1:x2]
+                        image_bytes = cv2.imencode(".jpg", crop)[1].tobytes()
                 example_truth = row["truth"]
-                st.image(str(path), caption="Manually transcribed demo photo · not part of the headline test", width=360)
+                st.image(str(path), caption="Real vehicle scene · visually checked label · demo only", width=360)
             else:
                 st.info("Demo examples are unavailable on this machine.")
         if st.button("Analyze plate", type="primary", width="stretch", disabled=image_bytes is None):
@@ -359,7 +367,7 @@ with method_tab:
     st.markdown("""
 **Detection** finds a rectangle around the plate in a full vehicle image. **OCR** reads letters and digits from that crop. **Calibration** uses labeled examples to estimate whether the whole reading is right. **Routing** accepts only readings above a threshold chosen on validation data; others go to review.
 
-The data is split by repeated plate identity and source video. The local reader is selected using the training split; confidence is fitted on calibration data, and thresholds are chosen on validation data. An additional box-only source added 180 screened full vehicle photos to detector training, plus 12 manually transcribed demo examples. Its other 1,902 plate crops have no trustworthy text labels and are not used for OCR evaluation. The source XML labels have only a sampled visual audit so far, and some Google images show foreign plates. The OCR test statistics were viewed before the routing evaluation, and the expanded detector was evaluated on that same test. These results are **held out from fitting but not fully blinded**.
+The data is split by repeated plate identity and source video. The local reader is selected using the training split; confidence is fitted on calibration data, and thresholds are chosen on validation data. An additional box-only source added 180 screened full vehicle photos to detector training. Its other 1,902 plate crops have no trustworthy text labels and are not used for OCR evaluation. The 12-gallery examples are original full vehicle photos from the first source, with their XML plate text visually checked; they are demo examples, not a benchmark. The source XML labels have only a sampled visual audit so far, and some Google images show foreign plates. The OCR test statistics were viewed before the routing evaluation, and the expanded detector was evaluated on that same test. These results are **held out from fitting but not fully blinded**.
 
 This is an academic prototype. Glare, motion blur, tiny crops, uncommon layouts, and new cameras can reduce accuracy. Human correction remains necessary for uncertain cases. No plate image or API key is sent to a cloud service by this demo.
 """)

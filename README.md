@@ -14,11 +14,11 @@ The local environment already has its dependencies and generated model files:
 ./venv/bin/streamlit run app/streamlit_app.py
 ```
 
-Open the local address Streamlit prints. The demo uses local models and makes no API calls. Choose **Full vehicle photo** for the detector-plus-OCR flow, or **Plate crop** to examine OCR separately. The 12-photo demo gallery works in the portable bundle; batch review accepts up to 20 uploads and exports CSV. The evidence tab shows the test plots and detector comparison. Human corrections are saved locally in `results/review_corrections.csv`.
+Open the local address Streamlit prints. The demo uses local models and makes no API calls. Choose **Full vehicle photo** for the detector-plus-OCR flow, or **Plate crop** to examine OCR separately. The gallery now contains 12 real-world vehicle scenes, not plate-only photos, and works in the portable bundle. Batch review accepts up to 20 uploads and exports CSV. The evidence tab shows the test plots and detector comparison. Human corrections are saved locally in `results/review_corrections.csv`.
 
 The [nine-slide presentation](RiskGate_Presentation.pdf) is ready to use; [presentation.html](presentation.html) supports arrow-key navigation. The local `weights/` folder contains the detector and OCR files needed for an offline demo on this machine.
 
-`RiskGate_Submission.zip` is a portable copy of the demo, models, charts, report, slides, and 12 sample photos without the full datasets or API keys. It is generated with `./venv/bin/python -m scripts.package_submission`. On another machine, create a Python virtual environment, install `requirements.txt`, and run the Streamlit command.
+`RiskGate_Submission.zip` is a portable copy of the demo, models, charts, report, slides, and 12 original vehicle scenes without the full datasets or API keys. It is generated with `./venv/bin/python -m scripts.package_submission`. The gallery source is credited in its manifest and [data notes](docs/DATA_NOTES.md). On another machine, create a Python virtual environment, install `requirements.txt`, and run the Streamlit command.
 
 ## Rebuild the experiment
 
