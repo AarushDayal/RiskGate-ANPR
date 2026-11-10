@@ -1,5 +1,7 @@
 # RiskGate-ANPR: Part 1 walkthrough (Hinglish)
 
+**Historical note:** This explains the early 25-plate EasyOCR phase. It is not the final system state. See [PROJECT_STATUS.md](PROJECT_STATUS.md), [EVALUATION_REPORT.md](EVALUATION_REPORT.md), and [STUDY_GUIDE.md](STUDY_GUIDE.md) for the current detector, OCR comparison, calibration, and demo.
+
 ## Har file kya karta hai (1 line each)
 - `riskgate/contracts.py` — `PlateSample` (image+bbox+truth) aur `EngineResult` (text/conf/latency/error) dataclasses; engine error return karta hai, raise nahi.
 - `riskgate/config.py` — sab paths, SEED=0, MIN_CROP_H, SPLIT_FRACTIONS, aur device() (prints `cuda`).

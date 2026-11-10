@@ -12,3 +12,4 @@ splits_v2.json
 calibration.json
 weights/
 *.pt
+RiskGate_Submission.zip

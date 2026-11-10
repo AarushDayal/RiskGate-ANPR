@@ -48,34 +48,49 @@ def load_samples(data_dir: Path = config.DATA_DIR) -> list[PlateSample]:
 
 
 def load_all_samples(data_dir: Path = config.DATA_DIR) -> list[PlateSample]:
-    """Combine source XML labels with reviewed Kaggle crop labels, if present."""
+    """Combine XML labels with any human review overrides, without changing either file."""
     samples = load_samples(data_dir)
-    labels = config.ROOT / "data/labels/kaggle_labels.csv"
+    xml_labels = config.ROOT / "data/labels/kaggle_xml_labels.csv"
+    reviewed_labels = config.ROOT / "data/labels/kaggle_labels.csv"
+    overrides = {}
+    if reviewed_labels.exists():
+        with reviewed_labels.open(newline="") as source:
+            overrides = {row["crop_path"]: row["truth"] for row in csv.DictReader(source)}
+    labels = xml_labels if xml_labels.exists() else reviewed_labels
     if labels.exists():
-        with labels.open(newline="") as f:
-            for row in csv.DictReader(f):
-                if not row.get("truth") or not row.get("crop_path"):
+        with labels.open(newline="") as source:
+            for row in csv.DictReader(source):
+                truth = overrides.get(row["crop_path"], row["truth"])
+                if not truth or not row.get("crop_path"):
                     continue
                 image = config.ROOT / row["crop_path"]
                 if image.exists():
-                    samples.append(PlateSample(str(image), (0, 0, 0, 0), row["truth"],
+                    samples.append(PlateSample(str(image), (0, 0, 0, 0), truth,
                                                "kaggle", f"kaggle:{row['group_id']}"))
     return samples
 
 
 def make_splits_v2(samples: list[PlateSample], path: Path = config.ROOT / "splits_v2.json") -> dict[str, list[str]]:
-    """Assign each source image as a unit; reserve Datacluster for a source shift check."""
-    groups = sorted({s.group_id or f"{s.source}:{Path(s.image_path).stem}" for s in samples
-                     if s.source == "kaggle"})
-    if not groups:
+    """Keep every repeated vehicle/video group in one split."""
+    group_sizes = {}
+    for sample in samples:
+        if sample.source == "kaggle":
+            key = sample.group_id or f"{sample.source}:{Path(sample.image_path).stem}"
+            group_sizes[key] = group_sizes.get(key, 0) + 1
+    if not group_sizes:
         raise ValueError("Reviewed Kaggle labels are required before making splits_v2.json")
     rng = random.Random(config.SEED)
+    groups = sorted(group_sizes)
     rng.shuffle(groups)
-    n_calib = round(0.4 * len(groups))
-    n_val = round(0.3 * len(groups))
-    splits = {"calib": groups[:n_calib], "val": groups[n_calib:n_calib+n_val],
-              "test": groups[n_calib+n_val:],
-              "cross_dataset_test": sorted({s.group_id for s in samples if s.source == "datacluster"})}
+    groups.sort(key=lambda group: group_sizes[group], reverse=True)
+    fractions = {"train": 0.5, "calib": 0.2, "val": 0.15, "test": 0.15}
+    splits = {name: [] for name in fractions}
+    counts = dict.fromkeys(fractions, 0)
+    for group in groups:
+        split = min(fractions, key=lambda name: counts[name] / fractions[name])
+        splits[split].append(group)
+        counts[split] += group_sizes[group]
+    splits["cross_dataset_test"] = sorted({s.group_id for s in samples if s.source == "datacluster"})
     path.write_text(json.dumps(splits, indent=2) + "\n")
     return splits
 

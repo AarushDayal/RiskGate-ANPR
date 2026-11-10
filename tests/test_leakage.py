@@ -10,5 +10,5 @@ def test_group_split_keeps_sources_and_images_apart(tmp_path: Path):
     samples.append(PlateSample("d.jpg", (0, 0, 1, 1), "AB12", "datacluster", "datacluster:d"))
     splits = make_splits_v2(samples, tmp_path / "splits_v2.json")
     assert len(set().union(*(set(v) for v in splits.values()))) == sum(map(len, splits.values()))
-    assert len(splits["calib"]) == 4 and len(splits["val"]) == 3
+    assert all(splits[name] for name in ("train", "calib", "val", "test"))
     assert splits["cross_dataset_test"] == ["datacluster:d"]
