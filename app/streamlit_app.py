@@ -81,7 +81,6 @@ def detector(path: str):
     return YOLO(path)
 
 
-@st.cache_data
 def demo_examples() -> dict[str, dict]:
     gallery = config.ROOT / "data/sample_gallery/manifest.csv"
     if gallery.exists():
