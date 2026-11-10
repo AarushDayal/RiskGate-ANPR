@@ -23,14 +23,14 @@ def main() -> None:
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(f"{args.output} already exists; keep the first evaluation run")
-    splits = json.loads((config.ROOT / "splits_v2.json").read_text())
+    splits = json.loads(config.SPLITS_V2.read_text())
     test = set(splits["test"])
     with (config.ROOT / "data/indian_manifest.csv").open(newline="") as source:
         samples = [row for row in csv.DictReader(source) if "kaggle:" + row["group_id"] in test]
     name = json.loads((config.RESULTS_DIR / "selected_reader.json").read_text())["reader"]
     reader = FastPlateEngine() if name == "FastPlateOCR" else EasyOCREngine(config.READER_UPSCALE, config.READER_ALLOWLIST)
     detector = YOLO(str(args.weights))
-    calibration = load(config.ROOT / "calibration.json")
+    calibration = load(config.CALIBRATION_MODEL)
     details = []
     for row in samples:
         image = cv2.imread(str(config.ROOT / row["image_path"]))

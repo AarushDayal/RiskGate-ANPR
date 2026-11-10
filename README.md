@@ -16,7 +16,7 @@ The local environment already has its dependencies and generated model files:
 
 Open the local address Streamlit prints. The demo uses local models and makes no API calls. Choose **Full vehicle photo** for the detector-plus-OCR flow, or **Plate crop** to examine OCR separately. The gallery now contains 12 real-world vehicle scenes, not plate-only photos, and works in the portable bundle. Batch review accepts up to 20 uploads and exports CSV. The evidence tab shows the test plots and detector comparison. Human corrections are saved locally in `results/review_corrections.csv`.
 
-The [nine-slide presentation](RiskGate_Presentation.pdf) is ready to use; [presentation.html](presentation.html) supports arrow-key navigation. The local `weights/` folder contains the detector and OCR files needed for an offline demo on this machine.
+The [nine-slide presentation](presentation/RiskGate_Presentation.pdf) is ready to use; [interactive slides](presentation/presentation.html) support arrow-key navigation. The local `weights/` folder contains the detector and OCR files needed for an offline demo on this machine.
 
 `RiskGate_Submission.zip` is a portable copy of the demo, models, charts, report, slides, and 12 original vehicle scenes without the full datasets or API keys. It is generated with `./venv/bin/python -m scripts.package_submission`. The gallery source is credited in its manifest and [data notes](docs/DATA_NOTES.md). On another machine, create a Python virtual environment, install `requirements.txt`, and run the Streamlit command.
 
@@ -42,3 +42,18 @@ make check
 GPU training and GPU EasyOCR inference require a working CUDA installation. The project was run with an RTX 4060 Laptop GPU; FastPlateOCR uses local ONNX CPU inference. The detector training run was interrupted after three completed epochs; its best available checkpoint was copied to `weights/plate_detector.pt` and evaluated. The one-time test commands refuse to overwrite final results.
 
 The source images, crops, generated weights, cache, and result files are Git-ignored. Do not redistribute the dataset. See [data notes](docs/DATA_NOTES.md) and [project status](docs/PROJECT_STATUS.md).
+
+## Project layout
+
+| Folder | Contents |
+| --- | --- |
+| `app/` | Streamlit demo. |
+| `riskgate/` | Detection, OCR wrappers, confidence, and routing code. |
+| `scripts/` | Data preparation, experiments, evaluation, packaging, and the smoke check. |
+| `tests/` | Automated checks. |
+| `docs/` | Study material, project status, and evaluation notes. |
+| `presentation/` | Slides and PDF for the faculty presentation. |
+| `archive/` | Early prototype scripts and their small CSV; not used by the final demo. |
+| `data/`, `weights/`, `results/` | Local inputs, model files, and generated outputs. |
+
+Run commands from the project root. The generated submission ZIP stays at the root; calibration lives in `weights/`, and split manifests live in `data/` or `archive/`.

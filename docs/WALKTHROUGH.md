@@ -5,7 +5,7 @@
 ## Har file kya karta hai (1 line each)
 - `riskgate/contracts.py` — `PlateSample` (image+bbox+truth) aur `EngineResult` (text/conf/latency/error) dataclasses; engine error return karta hai, raise nahi.
 - `riskgate/config.py` — sab paths, SEED=0, MIN_CROP_H, SPLIT_FRACTIONS, aur device() (prints `cuda`).
-- `riskgate/data.py` — XMLs padh ke PlateSamples banata hai (text missing → skip, bbox clip), aur saari 47 images ke names ko seed se shuffle karke calib/val/test = 19/14/14 split karke `splits.json` likhta hai (assert: koi image do splits me nahi).
+- `riskgate/data.py` — XMLs padh ke PlateSamples banata hai (text missing → skip, bbox clip), aur saari 47 images ke names ko seed se shuffle karke calib/val/test = 19/14/14 split karke `archive/splits.json` likhta hai (assert: koi image do splits me nahi).
 - `riskgate/metrics.py` — normalize, exact_match, CER (edit distance / len(truth)), ECE (10 bins), risk-coverage points.
 - `riskgate/grammar.py` — Indian plate classify: VALID / NONSTANDARD / INVALID, sirf classify, kabhi "correct" nahi karta.
 - `riskgate/engines/base.py` — Engine protocol: read(image) -> EngineResult, kabhi raise nahi.
@@ -13,12 +13,12 @@
 - `riskgate/engines/mock.py` — test ke liye fixed-result engine, koi model/network nahi.
 - `tests/` — 12 tests, har metric ka hand-computed expected value comment me.
 - `Makefile` — `make check` = pytest + 10-image smoke run.
-- `run_eval.py` — 3 variants (baseline / allowlist / allowlist+upscale) ko table + `results/baseline_easyocr.csv` (image, plate index, truth, pred, conf, grammar_class, ok) me likhta hai; smoke run CSV overwrite nahi karta.
-- `eval_easyocr.py` — old prototype, untouched (reference).
+- `scripts/run_eval.py` — 3 variants (baseline / allowlist / allowlist+upscale) ko table + `results/baseline_easyocr.csv` (image, plate index, truth, pred, conf, grammar_class, ok) me likhta hai; smoke run CSV overwrite nahi karta.
+- `archive/eval_easyocr.py` — old prototype kept for reference; its CSV output now stays in `archive/`.
 
 ## Ek plate ka data flow (6 steps)
 1. `data.py` `Annotations/*.xml` parse karta hai → `<attribute>` me `number_plate_text` mila to PlateSample ban gaya (bbox image se clip).
-2. `make_splits()` image names shuffle (seed 0) karke image ko calib/val/test me daalta hai → `splits.json`.
+2. `make_splits()` image names shuffle (seed 0) karke image ko calib/val/test me daalta hai → `archive/splits.json`.
 3. Eval me image `cv2.imread` → bbox se crop `data.crop()`.
 4. Crop `engine.read()` ko jata hai → EngineResult(text, raw_conf, latency, error).
 5. `metrics.normalize()` pred+truth dono pe → `exact_match`, `cer`.

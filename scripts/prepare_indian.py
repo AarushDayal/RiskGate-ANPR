@@ -13,7 +13,7 @@ from riskgate.metrics import normalize
 
 SOURCE = config.ROOT / "data/indian"
 XML_LABELS = config.ROOT / "data/labels/kaggle_xml_labels.csv"
-DRAFTS = config.ROOT / "draft_labels.csv"
+DRAFTS = config.DRAFTS
 MANIFEST = config.ROOT / "data/indian_manifest.csv"
 CROPS = config.ROOT / "data/crops/indian"
 

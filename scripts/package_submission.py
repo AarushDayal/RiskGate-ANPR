@@ -7,9 +7,8 @@ from riskgate import config
 
 ROOT = config.ROOT
 OUTPUT = ROOT / "RiskGate_Submission.zip"
-SINGLE = ["README.md", "requirements.txt", "Makefile", "presentation.html",
-          "RiskGate_Presentation.pdf", "calibration.json", ".streamlit/config.toml"]
-FOLDERS = ["app", "riskgate", "scripts", "docs", "weights/fastplate", "data/sample_gallery"]
+SINGLE = ["README.md", "requirements.txt", "Makefile", "weights/calibration.json", ".streamlit/config.toml"]
+FOLDERS = ["app", "riskgate", "scripts", "docs", "presentation", "weights/fastplate", "data/sample_gallery"]
 RESULTS = ["selected_reader.json", "final_test.json", "end_to_end_test.json",
            "end_to_end_extra.json", "detector_test.json", "detector_comparison.json",
            "baseline_v2_summary.txt", "risk_coverage.png", "reliability.png", "audit_issues.csv"]

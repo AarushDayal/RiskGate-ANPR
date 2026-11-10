@@ -70,7 +70,7 @@ def load_all_samples(data_dir: Path = config.DATA_DIR) -> list[PlateSample]:
     return samples
 
 
-def make_splits_v2(samples: list[PlateSample], path: Path = config.ROOT / "splits_v2.json") -> dict[str, list[str]]:
+def make_splits_v2(samples: list[PlateSample], path: Path = config.SPLITS_V2) -> dict[str, list[str]]:
     """Keep every repeated vehicle/video group in one split."""
     group_sizes = {}
     for sample in samples:

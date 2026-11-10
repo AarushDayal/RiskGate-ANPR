@@ -12,7 +12,7 @@ from riskgate.router import choose_thresholds, route, wilson_interval
 
 
 READS = config.RESULTS_DIR / "baseline_v2.csv"
-MODEL = config.ROOT / "calibration.json"
+MODEL = config.CALIBRATION_MODEL
 FINAL = config.RESULTS_DIR / "final_test.json"
 
 

@@ -25,7 +25,7 @@ def style() -> None:
 
 def main() -> None:
     style()
-    model = load(config.ROOT / "calibration.json")
+    model = load(config.CALIBRATION_MODEL)
     cropped = [row for row in rows(config.RESULTS_DIR / "baseline_v2.csv") if row["split"] == "test"]
     extra = config.RESULTS_DIR / "end_to_end_extra_details.csv"
     full = rows(extra if extra.exists() else config.RESULTS_DIR / "end_to_end_details.csv")

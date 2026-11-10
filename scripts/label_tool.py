@@ -6,12 +6,12 @@ from pathlib import Path
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
-DRAFTS = ROOT / "draft_labels.csv"
+DRAFTS = ROOT / "data/labels/draft_labels.csv"
 LABELS = ROOT / "data/labels/kaggle_labels.csv"
 
 st.title("RiskGate plate labeling")
 if not DRAFTS.exists():
-    st.info("Place draft_labels.csv in the project root with crop_path, group_id, draft columns.")
+    st.info("Place draft_labels.csv in data/labels/ with crop_path, group_id, draft columns.")
     st.stop()
 
 with DRAFTS.open(newline="") as f:

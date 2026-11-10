@@ -19,7 +19,7 @@ from riskgate.router import route, wilson_interval
 
 def main() -> None:
     manifest = json.loads((config.RESULTS_DIR / "gemini_subset.json").read_text())
-    model = load(config.ROOT / "calibration.json")
+    model = load(config.CALIBRATION_MODEL)
     with (config.RESULTS_DIR / "baseline_v2.csv").open(newline="") as f:
         rows = {r["image"]: r for r in csv.DictReader(f)}
     cache = Cache(config.RESULTS_DIR / "gemini_cache")

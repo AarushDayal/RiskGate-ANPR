@@ -1,3 +1,4 @@
+from riskgate import config
 from riskgate.contracts import EngineResult
 from riskgate.data import crop, load_samples, make_splits
 from riskgate.engines.mock import MockEngine
@@ -20,7 +21,7 @@ def test_splits_disjoint():
     assert len(all_img) == len(set(all_img)) == 47
     import json
 
-    assert json.loads(open("splits.json").read())["test"] == sp["test"]
+    assert json.loads(config.SPLITS_JSON.read_text())["test"] == sp["test"]
 
 
 def test_crop_and_engine():

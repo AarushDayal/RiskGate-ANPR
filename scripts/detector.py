@@ -27,7 +27,7 @@ def box_to_yolo(row: dict, width: int, height: int) -> str:
 
 
 def prepare() -> dict:
-    splits = json.loads((config.ROOT / "splits_v2.json").read_text())
+    splits = json.loads(config.SPLITS_V2.read_text())
     owner = {group: split for split, groups in splits.items() for group in groups}
     counts = {split: 0 for split in ("train", "val", "test")}
     for index, row in enumerate(load_rows()):
@@ -65,7 +65,7 @@ def overlap(a: tuple[float, ...], b: tuple[float, ...]) -> float:
 
 
 def evaluate(model: YOLO) -> dict:
-    splits = json.loads((config.ROOT / "splits_v2.json").read_text())
+    splits = json.loads(config.SPLITS_V2.read_text())
     test = set(splits["test"])
     rows = [row for row in load_rows() if "kaggle:" + row["group_id"] in test]
     found, correct, predictions = 0, 0, 0
@@ -97,7 +97,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=("prepare", "train", "evaluate"))
     parser.add_argument("--epochs", type=int, default=15)
-    parser.add_argument("--start-from", default="yolo11n.pt")
+    parser.add_argument("--start-from", default=str(config.YOLO_START))
     parser.add_argument("--name", default="detector_training")
     args = parser.parse_args()
     if args.mode == "prepare":

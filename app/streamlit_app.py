@@ -156,7 +156,7 @@ def save_correction(image_bytes: bytes, proposed: str, corrected: str) -> None:
                          "proposed": proposed, "corrected": normalize(corrected)})
 
 
-model_path = config.ROOT / "calibration.json"
+model_path = config.CALIBRATION_MODEL
 calibration = load(model_path) if model_path.exists() else None
 selected_path = config.RESULTS_DIR / "selected_reader.json"
 reader_name = json.loads(selected_path.read_text())["reader"] if selected_path.exists() else "EasyOCR"

@@ -35,7 +35,7 @@ def valid_labels(path: Path) -> bool:
 
 
 def main() -> None:
-    splits = json.loads((config.ROOT / "splits_v2.json").read_text())
+    splits = json.loads(config.SPLITS_V2.read_text())
     protected = set().union(*(set(splits[name]) for name in ("calib", "val", "test")))
     with (config.ROOT / "data/indian_manifest.csv").open(newline="") as source:
         holdout_paths = {config.ROOT / row["image_path"] for row in csv.DictReader(source)

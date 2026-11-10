@@ -6,4 +6,4 @@ test:
 	./venv/bin/python -m pytest tests -q
 
 smoke:
-	./venv/bin/python run_eval.py --images 10
+	./venv/bin/python -m scripts.run_eval --images 10

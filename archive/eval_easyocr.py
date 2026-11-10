@@ -2,7 +2,7 @@ import glob, re, sys, csv
 import xml.etree.ElementTree as ET
 import cv2, easyocr
 
-root = sys.argv[1]  # ./datacluster
+root = sys.argv[1]  # data/legacy/datacluster
 min_h = int(sys.argv[2]) if len(sys.argv) > 2 else 0  # chhote crops skip karne ke liye
 
 reader = easyocr.Reader(["en"], gpu=False)
@@ -64,7 +64,7 @@ for x in sorted(glob.glob(f"{root}/Annotations/*.xml")):
         )
         print(rows[-1])
 
-with open("eval_easyocr.csv", "w", newline="") as f:
+with open("archive/eval_easyocr.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=rows[0].keys())
     w.writeheader()
     w.writerows(rows)
