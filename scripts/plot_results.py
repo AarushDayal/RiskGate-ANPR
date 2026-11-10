@@ -27,7 +27,8 @@ def main() -> None:
     style()
     model = load(config.ROOT / "calibration.json")
     cropped = [row for row in rows(config.RESULTS_DIR / "baseline_v2.csv") if row["split"] == "test"]
-    full = rows(config.RESULTS_DIR / "end_to_end_details.csv")
+    extra = config.RESULTS_DIR / "end_to_end_extra_details.csv"
+    full = rows(extra if extra.exists() else config.RESULTS_DIR / "end_to_end_details.csv")
     crop_conf = [predict(model, row) for row in cropped]
     crop_ok = [bool(int(row["ok"])) for row in cropped]
     full_conf = [float(row["confidence"]) for row in full]

@@ -53,6 +53,14 @@ The detector's localization is substantially better than the OCR's complete-text
 
 The video group and image-source mix affect the headline number. Some video groups contain many related frames, so percentages are not independent-vehicle accuracy. Low resolution, glare, two-row layouts, ambiguous characters, inaccurate XML labels, and non-Indian examples can all change OCR results. The local demo exposes plate crop and correction input so these failures are visible.
 
+## Expanded detector and demo gallery (exploratory update)
+
+The [Kedarsai box dataset](https://www.kaggle.com/datasets/kedarsai/indian-license-plates-with-labels) added 2,083 images locally. Only 181 were full vehicle JPGs suited to this detector; the 1,902 PNGs are mostly plate close-ups without verified text. One full image was excluded as a possible near-duplicate of the protected original holdout. The remaining **180** were added only to detector training, bringing its training count to **1,027**. Its bounding boxes were generated or checked by the dataset publisher, not by us. Twelve of its full photos were separately transcribed by visual inspection for the portable demo gallery; those examples are not used to claim independent OCR accuracy.
+
+The detector was fine-tuned three more epochs from the original checkpoint. On the same 254-image grouped test, matched boxes rose **237 → 248** at IoU ≥ 0.5 (93.3% → 97.6% recall). Predicted boxes rose 246 → 268, so simplified precision fell 96.3% → 92.5%. The full pipeline still read **71/254** plates exactly; mean CER improved **0.258 → 0.237**. The accept/review counts remained 75 accepted with 11 errors. This is an **exploratory repeated test after earlier results were seen**, not a new blinded estimate. The updated app uses this expanded detector and exposes both versions in its evidence view.
+
+Awiros was assessed as an optional reader. Its [model card](https://huggingface.co/Awiros/anpr-ocr) and [technical report](https://huggingface.co/Awiros/anpr-ocr/blob/main/TechnicalReport.pdf) describe a strong Indian specialist, but the model uses the Saisirishan dataset as seed training data and its provided inference script requires a separate PaddleOCR/PaddlePaddle runtime. Testing it on our current main dataset would not be independent, so it was not used for headline numbers or added to the offline demo.
+
 ## What to say in the faculty presentation
 
 > “The detector found most plates, but exact character reading remained the hard part. I measured that limitation instead of hiding it. My confidence model made the system more selective: it can send uncertain results for human review. A validation target of 10% produced 14.7% accepted error in the complete held-out pipeline, so I would not deploy it unattended. The project demonstrates a measurable method and a working local system, and it identifies where more data and OCR training are needed.”

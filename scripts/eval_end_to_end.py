@@ -1,7 +1,9 @@
 """One-time full-image evaluation: detector miss counts as an OCR failure."""
 
+import argparse
 import csv
 import json
+from pathlib import Path
 
 import cv2
 from ultralytics import YOLO
@@ -14,19 +16,20 @@ from riskgate.features import plate_features
 from riskgate.metrics import cer, exact_match, normalize
 from riskgate.router import route, wilson_interval
 
-OUTPUT = config.RESULTS_DIR / "end_to_end_test.json"
-
-
 def main() -> None:
-    if OUTPUT.exists():
-        raise FileExistsError(f"{OUTPUT} already exists; keep the first held-out run")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, default=config.RESULTS_DIR / "end_to_end_test.json")
+    parser.add_argument("--weights", type=Path, default=config.ROOT / "weights/plate_detector.pt")
+    args = parser.parse_args()
+    if args.output.exists():
+        raise FileExistsError(f"{args.output} already exists; keep the first evaluation run")
     splits = json.loads((config.ROOT / "splits_v2.json").read_text())
     test = set(splits["test"])
     with (config.ROOT / "data/indian_manifest.csv").open(newline="") as source:
         samples = [row for row in csv.DictReader(source) if "kaggle:" + row["group_id"] in test]
     name = json.loads((config.RESULTS_DIR / "selected_reader.json").read_text())["reader"]
     reader = FastPlateEngine() if name == "FastPlateOCR" else EasyOCREngine(config.READER_UPSCALE, config.READER_ALLOWLIST)
-    detector = YOLO(str(config.ROOT / "weights/plate_detector.pt"))
+    detector = YOLO(str(args.weights))
     calibration = load(config.ROOT / "calibration.json")
     details = []
     for row in samples:
@@ -62,8 +65,8 @@ def main() -> None:
               "accepted_error": errors/len(accepted) if accepted else None,
               "coverage": len(accepted)/n}
     config.RESULTS_DIR.mkdir(exist_ok=True)
-    OUTPUT.write_text(json.dumps(report, indent=2) + "\n")
-    with (config.RESULTS_DIR / "end_to_end_details.csv").open("w", newline="") as output:
+    args.output.write_text(json.dumps(report, indent=2) + "\n")
+    with args.output.with_name(args.output.stem + "_details.csv").open("w", newline="") as output:
         writer = csv.DictWriter(output, fieldnames=list(details[0]))
         writer.writeheader()
         writer.writerows(details)

@@ -3,6 +3,7 @@ from pathlib import Path
 from riskgate import config
 from riskgate.data import load_all_samples
 from scripts.detector import box_to_yolo, overlap
+from scripts.import_extra_detection import valid_labels
 from scripts.prepare_indian import assign_groups, video_key
 
 
@@ -37,3 +38,11 @@ def test_human_review_overrides_xml_without_editing_it(tmp_path, monkeypatch):
     samples = load_all_samples(tmp_path / "empty")
     assert len(samples) == 1 and samples[0].truth == "AB13"
     assert "AB12" in xml.read_text()
+
+
+def test_extra_detector_labels_reject_invalid_boxes(tmp_path):
+    label = tmp_path / "plate.txt"
+    label.write_text("0 0.5 0.5 0.4 0.2\n")
+    assert valid_labels(label)
+    label.write_text("0 0.5 0.5 1.4 0.2\n")
+    assert not valid_labels(label)

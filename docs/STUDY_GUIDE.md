@@ -1,7 +1,7 @@
 # RiskGate ANPR: simple project and viva guide
 
 **Deadline:** 16 November 2026  
-**Use this honestly:** the current full-image test read **71/254** plates exactly. The detector matched **237/254** labeled boxes; OCR is the limiting stage. At the 10% validation target, the complete system accepted **75/254**, and **11 of those 75 were wrong**. See [the evaluation report](EVALUATION_REPORT.md) for conditions and limitations. The old EasyOCR baseline was **5/25** on a small Datacluster sample.
+**Use this honestly:** the current full-image test read **71/254** plates exactly. The expanded detector matched **248/254** labeled boxes (the original matched 237/254); OCR is the limiting stage. At the 10% validation target, the complete system accepted **75/254**, and **11 of those 75 were wrong**. The detector update reused a previously viewed test. See [the evaluation report](EVALUATION_REPORT.md) for conditions and limitations. The old EasyOCR baseline was **5/25** on a small Datacluster sample.
 
 ## The project in one sentence
 

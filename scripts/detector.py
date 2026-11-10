@@ -97,18 +97,20 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=("prepare", "train", "evaluate"))
     parser.add_argument("--epochs", type=int, default=15)
+    parser.add_argument("--start-from", default="yolo11n.pt")
+    parser.add_argument("--name", default="detector_training")
     args = parser.parse_args()
     if args.mode == "prepare":
         print(json.dumps(prepare(), indent=2))
     elif args.mode == "train":
         if not (DATASET / "dataset.yaml").exists():
             prepare()
-        model = YOLO("yolo11n.pt")
+        model = YOLO(args.start_from)
         model.train(data=str(DATASET / "dataset.yaml"), epochs=args.epochs, imgsz=640,
-                    batch=8, device=0, project=str(config.RESULTS_DIR), name="detector_training",
+                    batch=8, device=0, project=str(config.RESULTS_DIR), name=args.name,
                     exist_ok=True, workers=2, seed=config.SEED)
         WEIGHTS.parent.mkdir(exist_ok=True)
-        shutil.copyfile(config.RESULTS_DIR / "detector_training/weights/best.pt", WEIGHTS)
+        shutil.copyfile(config.RESULTS_DIR / args.name / "weights/best.pt", WEIGHTS)
         print(json.dumps(evaluate(YOLO(str(WEIGHTS))), indent=2))
     else:
         print(json.dumps(evaluate(YOLO(str(WEIGHTS))), indent=2))
